@@ -55,8 +55,8 @@ if __name__ == '__main__':
     # and call train_classifier.
     train_data = TRAIN
     dev_data = DEV
-    num_iterations = 30
-    learning_rate = 0.005
+    num_iterations = 50
+    learning_rate = 0.001
     in_dim = len(F2I)
     hid_dim = len(L2I)*2
     out_dim = len(L2I)

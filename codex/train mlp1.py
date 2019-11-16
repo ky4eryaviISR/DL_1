@@ -31,21 +31,16 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
     learning_rate: the learning rate to use.
     params: list of parameters (initial values)
     """
-    [W, b, U, b_tag] = params
     for I in range(num_iterations):
-        cum_loss = 0.0  # total loss in this iteration.
+        cum_loss = 0.0 # total loss in this iteration.
         random.shuffle(train_data)
         for label, features in train_data:
-            x = feats_to_vec(features)  # convert features to a vector.
-            y = L2I.get(label)  # convert the label to number if needed.
-            loss, [gW, gb, gU, gb_tag] = mlp1.loss_and_gradients(x, y, params)
+            x = feats_to_vec(features) # convert features to a vector.
+            y = L2I[label]                  # convert the label to number if needed.
+            loss, grads = mlp1.loss_and_gradients(x, y, params)
             cum_loss += loss
-            W -= learning_rate * gW
-            b -= learning_rate * gb
-            U -= learning_rate * gU
-            b_tag -= learning_rate * gb_tag
-            # update the parameters according to the gradients
-            # and the learning rate.
+            # YOUR CODE HERE
+            params = [params[i] - learning_rate*grads[i] for i in range(len(grads))]
 
         train_loss = cum_loss / len(train_data)
         train_accuracy = accuracy_on_dataset(train_data, params)
@@ -60,18 +55,12 @@ if __name__ == '__main__':
     # and call train_classifier.
     train_data = TRAIN
     dev_data = DEV
-    num_iterations = 75
-    learning_rate = 0.001
+    num_iterations = 30
+    learning_rate = 0.005
     in_dim = len(F2I)
     hid_dim = len(L2I)*2
     out_dim = len(L2I)
     params = mlp1.create_classifier(in_dim,hid_dim, out_dim)
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
-    # with open("test.pred", "w") as file:
-    #     for _, feature in TEST:
-    #         x = feats_to_vec(feature)
-    #         y_tag = ll.predict(x,trained_params)
-    #         value = list(L2I.keys())[list(L2I.values()).index(y_tag)]
-    #         file.write(value+"\n")
 
 

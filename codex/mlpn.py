@@ -4,24 +4,35 @@ from codex.utils import one_hot_vector
 from collections import namedtuple
 
 STUDENT={'name': 'Vladimir Balagula',
-         'ID': ''}
+         'ID': '323792770'}
 
 
 
 def classifier_output(x, params):
     # YOUR CODE HERE.
     out = x.copy()
-    temp_storage = []
-    for W, b in (zip(params[::2], params[1::2])):
-        temp_storage.append(single_feed_forward(out, [W, b]))
-        out = temp_storage[-1][1]
-
-    return softmax(out), temp_storage
+    layers_num = int(len(params)/2)
+    for i in range(0, layers_num-1, 2):
+        W, b = params[i], params[i+1]
+        out = np.tanh(np.dot(x, W) + b)
+    U, b_tag = params[-2], params[-1]
+    return softmax(np.dot(out, U)+b_tag)
 
 
 def predict(x, params):
     return np.argmax(classifier_output(x, params))
 
+def classifier_with_cache(x, params):
+    # YOUR CODE HERE.
+    out = x.copy()
+    temp_storage = []
+    layers_num = int(len(params) / 2)
+    for i in range(0, layers_num - 1, 2):
+        W, b = params[i], params[i + 1]
+        temp_storage.append(single_feed_forward(out, [W, b]))
+        out = temp_storage[-1][1]
+    U, b_tag = params[-2], params[-1]
+    return softmax(np.dot(out, U) + b_tag), temp_storage
 
 def single_feed_forward(x, params):
     W, b = params
@@ -48,29 +59,30 @@ def loss_and_gradients(x, y, params):
     you should not have gW2 and gb2.)
     """
     # YOU CODE HERE
-    y_tag, storage = classifier_output(x, params)
+    y_tag, storage = classifier_with_cache(x, params)
     loss = -np.log(y_tag[y])
 
     y = one_hot_vector(len(y_tag), y)
     storage.reverse()
-    prev_layer = storage[0][1]
+    params.reverse()
 
-    gU = np.outer(prev_layer, y_tag-y)
-    gb_tag = y_tag - y
-    it = iter(storage)
-    prev_dA = gU
+    prev_derive = y_tag - y
     gradients = []
-    gradients.append([gU, gb_tag])
-    for i in range(len(params)-1, -1, -2):
-        W = params[i-1]
-        b = params[i]
-        prev_layer = storage[-2][1]
-        prev_dA = prev_dA*(np.tanh(np.dot(x, W) + b)**2)
-        gW = np.outer(storage[-i][1], prev_dA)
-        gb = prev_dA
-        gradients.append([gW, gb])
-    gradients.reverse()
-    return loss, [x ,y]
+    derive = 0
+    for i in range(len(storage)+1):
+        W = params[i*2+1]
+        if i != len(storage):
+            prev_layer = storage[i][1] # z(x)
+            derive = 1 - np.tanh(storage[i][0])**2 # dz
+        else:
+            prev_layer = x
+        gW = np.outer(prev_layer, prev_derive)
+        gb = prev_derive
+        gradients += [gb, gW]
+        if i != len(storage):
+            prev_derive = np.dot(W, prev_derive)*derive
+    params.reverse()
+    return loss, gradients[::-1]
 
 def create_classifier(dims):
     """
@@ -97,26 +109,16 @@ def create_classifier(dims):
     for i in range(len(dims)-1):
         W = np.random.randn(dims[i], dims[i+1]) * np.sqrt(2 / (dims[i] + dims[i+1]))
         b = np.random.randn(dims[i+1]) * np.sqrt(2 / (dims[i] + dims[i+1]))
-        params.append((W, b))
+        params += [W, b]
 
     return params
 
 if __name__ == '__main__':
     from codex.grad_check import gradient_check
-    params = create_classifier([3, 8, 4])
+    params = create_classifier([3, 2, 4])
     [W, b] = params[0]
     [U, b_tag] = params[1]
-    # [[W2, b2], [W, b], [U, b_tag]] = params
-    #
-    # def _loss_and_W_grad(W):
-    #     global W2, b2, b, U, b_tag
-    #     loss, grads = loss_and_gradients([1, 2, 3], 0, params=[W2, b2, W, b, U, b_tag])
-    #     return loss, grads[2]
-    #
-    # def _loss_and_b_grad(b):
-    #     global W2, b2, W, U, b_tag
-    #     loss, grads = loss_and_gradients([1, 2, 3], 0, [W2, b2, W, b, U, b_tag])
-    #     return loss, grads[3]
+
     def _loss_and_W_grad(W):
         global b, U, b_tag
         loss, grads = loss_and_gradients([1, 2, 3], 0, [W, b, U, b_tag])
@@ -127,8 +129,21 @@ if __name__ == '__main__':
         loss, grads = loss_and_gradients([1, 2, 3], 0, [W, b, U, b_tag])
         return loss, grads[1]
 
+
+    def _loss_and_U_grad(U):
+        global W, b, b_tag
+        loss, grads = loss_and_gradients([1, 2, 3], 0, [W, b, U, b_tag])
+        return loss, grads[2]
+
+
+    def _loss_and_b_tag_grad(b_tag):
+        global W, U, b
+        loss, grads = loss_and_gradients([1, 2, 3], 0, [W, b, U, b_tag])
+        return loss, grads[3]
+
+
     for _ in range(10):
+        gradient_check(_loss_and_b_tag_grad, b_tag)
+        gradient_check(_loss_and_U_grad, U)
         gradient_check(_loss_and_W_grad, W)
-    #     gradient_check(_loss_and_U_grad, U)
-    #     gradient_check(_loss_and_W_grad, W)
-    #     gradient_check(_loss_and_b_grad, b)
+        gradient_check(_loss_and_b_grad, b)

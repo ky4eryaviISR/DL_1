@@ -1,4 +1,4 @@
-from codex import mlp1
+from codex import mlpn
 from codex.utils import *
 from codex.train_loglin import feats_to_vec
 
@@ -13,7 +13,7 @@ def accuracy_on_dataset(dataset, params):
         # on the dataset.
         # accuracy is (correct_predictions / all_predictions)
         x = feats_to_vec(features)
-        if mlp1.predict(x, params) == L2I[label]:
+        if mlpn.predict(x, params) == L2I[label]:
             good += 1
         else:
             bad += 1
@@ -36,7 +36,7 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
         for label, features in train_data:
             x = feats_to_vec(features) # convert features to a vector.
             y = L2I[label]                  # convert the label to number if needed.
-            loss, grads = mlp1.loss_and_gradients(x, y, params)
+            loss, grads = mlpn.loss_and_gradients(x, y, params)
             cum_loss += loss
             # YOUR CODE HERE
             params = [params[i] - learning_rate*grads[i] for i in range(len(grads))]
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     in_dim = len(F2I)
     hid_dim = len(L2I)*2
     out_dim = len(L2I)
-    params = mlp1.create_classifier(in_dim,hid_dim, out_dim)
+    params = mlpn.create_classifier(in_dim,hid_dim, out_dim)
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
 
 

@@ -59,7 +59,7 @@ if __name__ == '__main__':
     in_dim = len(F2I)
     hid_dim = 1000
     out_dim = len(L2I)
-    params = mlpn.create_classifier([in_dim,hid_dim, out_dim])
+    params = mlpn.create_classifier([600, 20, 30, 40, out_dim])
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
 
 

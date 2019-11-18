@@ -11,10 +11,10 @@ STUDENT={'name': 'Vladimir Balagula',
 def classifier_output(x, params):
     # YOUR CODE HERE.
     out = x.copy()
-    layers_num = int(len(params)/2)
-    for i in range(0, layers_num-1, 2):
-        W, b = params[i], params[i+1]
-        out = np.tanh(np.dot(x, W) + b)
+    layers_num = int((len(params)+1)/2)
+    for i in range(0, layers_num-1, 1):
+        W, b = params[i*2], params[i*2+1]
+        out = np.tanh(np.dot(out, W) + b)
     U, b_tag = params[-2], params[-1]
     return softmax(np.dot(out, U)+b_tag)
 
@@ -26,9 +26,9 @@ def classifier_with_cache(x, params):
     # YOUR CODE HERE.
     out = x.copy()
     temp_storage = []
-    layers_num = int(len(params) / 2)
-    for i in range(0, layers_num - 1, 2):
-        W, b = params[i], params[i + 1]
+    layers_num = int((len(params) + 1) / 2)
+    for i in range(0, layers_num - 1, 1):
+        W, b = params[2*i], params[2*i + 1]
         temp_storage.append(single_feed_forward(out, [W, b]))
         out = temp_storage[-1][1]
     U, b_tag = params[-2], params[-1]

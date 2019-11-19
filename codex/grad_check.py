@@ -17,22 +17,18 @@ def gradient_check(f, x):
     while not it.finished:
         ix = it.multi_index
 
-        ### modify x[ix] with h defined above to compute the numerical gradient.
-        ### if you change x, make sure to return it back to its original state for the next iteration.
-        ### YOUR CODE HERE:
-
-        # store the old value and calculate f(x+h) and f(x-h)
+        # calculate f(x+h) and f(x-h) after restore the old value
         bkup = x[ix]
         x[ix] = x[ix] + h
         fx_plus, _ = f(x)
         x[ix] = x[ix] - 2*h
         fx_minus, _ = f(x)
-
+        # calculate gradient numerically
         numeric_gradient = (fx_plus-fx_minus)/(2*h)
 
         x[ix] = bkup
 
-        ### END YOUR CODE
+
 
         # Compare gradients
         reldiff = abs(numeric_gradient - grad[ix]) / max(1, abs(numeric_gradient), abs(grad[ix]))
@@ -40,7 +36,7 @@ def gradient_check(f, x):
             print("Gradient check failed.")
             print(("First gradient error found at index %s" % str(ix)))
             print(("Your gradient: %f \t Numerical gradient: %f" % (grad[ix], numeric_gradient)))
-            #return
+            return
     
         it.iternext() # Step to next index
 

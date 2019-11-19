@@ -6,9 +6,8 @@ STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
 
 def classifier_output(x, params):
-    # YOUR CODE HERE.
     [W, b, U, b_tag] = params
-    probs = softmax(np.tanh(np.dot(x, W)+b).dot(U)+b_tag)
+    probs = softmax(np.tanh(W.T.dot(x)+b).dot(U)+b_tag)
     return probs
 
 def predict(x, params):
@@ -30,19 +29,18 @@ def loss_and_gradients(x, y, params):
     gU: matrix, gradients of U
     gb_tag: vector, gradients of b_tag
     """
-    # YOU CODE HERE
     y_tag = classifier_output(x, params)
     loss = -np.log(y_tag[y])
     W, b, U, b_tag = params
     y = one_hot_vector(len(y_tag), y)
 
-    hid_out = np.tanh(np.dot(x, W) + b)
+    hid_out = np.tanh(W.T.dot(x) + b)
 
     gU = np.outer(hid_out, y_tag - y)
     gb_tag = y_tag - y
 
     dl_dz = np.dot(U, y_tag-y)
-    dz_dh = 1.0 - np.tanh(np.dot(x, W) + b)**2
+    dz_dh = 1.0 - np.tanh(W.T.dot(x) + b)**2
     dl_dh = dl_dz*dz_dh
     gW = np.outer(x, dl_dh)
     gb = dl_dh
@@ -65,6 +63,7 @@ def create_classifier(in_dim, hid_dim, out_dim):
 
     params = [W, b, U, b_tag]
     return params
+
 
 if __name__ == '__main__':
     from codex.grad_check import gradient_check

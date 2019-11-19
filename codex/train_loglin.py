@@ -5,8 +5,9 @@ STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
 
 def feats_to_vec(features):
-    # YOUR CODE HERE.
-    # Should return a numpy vector of features.
+    """
+    converting features to vectors
+    """
     vec = [0] * len(F2I)
     for feature in features:
         if feature in F2I:
@@ -14,18 +15,17 @@ def feats_to_vec(features):
     return vec
 
 def accuracy_on_dataset(dataset, params):
-    good = bad = 0.0
+    """
+    Compute the accuracy (a scalar) of the current parameters
+    on the dataset.
+    accuracy is (correct_predictions / all_predictions)
+    """
+    good = total = 0.0
     for label, features in dataset:
-        # YOUR CODE HERE
-        # Compute the accuracy (a scalar) of the current parameters
-        # on the dataset.
-        # accuracy is (correct_predictions / all_predictions)
         x = feats_to_vec(features)
-        if ll.predict(x, params) == L2I[label]:
-            good += 1
-        else:
-            bad += 1
-    return good / (good + bad)
+        good += 1 if ll.predict(x, params) == L2I[label] else 0
+        total += 1
+    return good / total
 
 def train_classifier(train_data, dev_data, num_iterations, learning_rate, params):
     """
@@ -42,10 +42,10 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
         random.shuffle(train_data)
         for label, features in train_data:
             x = feats_to_vec(features) # convert features to a vector.
-            y = L2I[label]                  # convert the label to number if needed.
+            y = L2I[label] # convert the label to number if needed.
             loss, grads = ll.loss_and_gradients(x, y, params)
             cum_loss += loss
-            # YOUR CODE HERE
+            # update weights and bias
             params = [params[i] - learning_rate*grads[i] for i in range(len(grads))]
 
         train_loss = cum_loss / len(train_data)
@@ -54,22 +54,20 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
         print(I, train_loss, train_accuracy, dev_accuracy)
     return params
 
+
 if __name__ == '__main__':
-    # YOUR CODE HERE
-    # write codex to load the train and dev sets, set up whatever you need,
-    # and call train_classifier.
-    train_data = TRAIN
-    dev_data = DEV
-    # ...
+    # set parameters for model
     num_iterations = 75
     learning_rate = 0.0007
     in_dim = len(F2I)
     out_dim = len(L2I)
     params = ll.create_classifier(in_dim, out_dim)
-    trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
+    trained_params = train_classifier(TRAIN, DEV, num_iterations, learning_rate, params)
     with open("test.pred", "w") as file:
         for _, feature in TEST:
+            # convert feature to vectors
             x = feats_to_vec(feature)
+            # getting predicted value index and find it value
             y_tag = ll.predict(x,trained_params)
             value = list(L2I.keys())[list(L2I.values()).index(y_tag)]
             file.write(value+"\n")

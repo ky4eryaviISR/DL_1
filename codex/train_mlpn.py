@@ -6,18 +6,17 @@ STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
 
 def accuracy_on_dataset(dataset, params):
-    good = bad = 0.0
+    """
+    Compute the accuracy (a scalar) of the current parameters
+    on the dataset.
+    accuracy is (correct_predictions / all_predictions)
+    """
+    good = total = 0.0
     for label, features in dataset:
-        # YOUR CODE HERE
-        # Compute the accuracy (a scalar) of the current parameters
-        # on the dataset.
-        # accuracy is (correct_predictions / all_predictions)
         x = feats_to_vec(features)
-        if mlpn.predict(x, params) == L2I[label]:
-            good += 1
-        else:
-            bad += 1
-    return good / (good + bad)
+        good += 1 if mlpn.predict(x, params) == L2I[label] else 0
+        total += 1
+    return good / total
 
 
 def train_classifier(train_data, dev_data, num_iterations, learning_rate, params):
@@ -59,7 +58,10 @@ if __name__ == '__main__':
     in_dim = len(F2I)
     hid_dim = 1000
     out_dim = len(L2I)
+    print([dim.shape for dim in mlpn.create_classifier([20, 30, 40, 10])])
     params = mlpn.create_classifier([600, 20, 30, 40, out_dim])
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
+
+
 
 

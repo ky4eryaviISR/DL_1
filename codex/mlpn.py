@@ -1,7 +1,6 @@
 import numpy as np
 from codex.loglinear import softmax
 from codex.utils import one_hot_vector
-from collections import namedtuple
 
 STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
@@ -9,7 +8,6 @@ STUDENT={'name': 'Vladimir Balagula',
 
 
 def classifier_output(x, params):
-    # YOUR CODE HERE.
     out = x.copy()
     layers_num = int((len(params)+1)/2)
     for i in range(0, layers_num-1, 1):
@@ -23,7 +21,6 @@ def predict(x, params):
     return np.argmax(classifier_output(x, params))
 
 def classifier_with_cache(x, params):
-    # YOUR CODE HERE.
     out = x.copy()
     temp_storage = []
     layers_num = int((len(params) + 1) / 2)

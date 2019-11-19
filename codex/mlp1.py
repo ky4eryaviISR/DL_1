@@ -1,20 +1,23 @@
+from loglinear import softmax
+from utils import *
 import numpy as np
-from codex.loglinear import softmax
-from codex.utils import *
 
 STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
 
+
 def classifier_output(x, params):
     [W, b, U, b_tag] = params
-    probs = softmax(np.tanh(np.dot(x,W)+b).dot(U)+b_tag)
+    probs = softmax(np.tanh(np.dot(x, W)+b).dot(U)+b_tag)
     return probs
+
 
 def predict(x, params):
     """
     params: a list of the form [W, b, U, b_tag]
     """
     return np.argmax(classifier_output(x, params))
+
 
 def loss_and_gradients(x, y, params):
     """
@@ -45,6 +48,7 @@ def loss_and_gradients(x, y, params):
     gW = np.outer(x, dl_dh)
     gb = dl_dh
     return loss, [gW, gb, gU, gb_tag]
+
 
 def create_classifier(in_dim, hid_dim, out_dim):
     """

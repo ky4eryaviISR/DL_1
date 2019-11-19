@@ -53,13 +53,12 @@ if __name__ == '__main__':
     # and call train_classifier.
     train_data = TRAIN
     dev_data = DEV
-    num_iterations = 50
+    num_iterations = 20
     learning_rate = 0.001
     in_dim = len(F2I)
-    hid_dim = 1000
     out_dim = len(L2I)
     print([dim.shape for dim in mlpn.create_classifier([20, 30, 40, 10])])
-    params = mlpn.create_classifier([600, 20, 30, 40, out_dim])
+    params = mlpn.create_classifier([in_dim, 200, 300, out_dim])
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
 
 

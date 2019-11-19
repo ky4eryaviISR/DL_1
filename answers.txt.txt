@@ -1,0 +1,5 @@
+1. No, MLP1 and LogLinear gave the same accuracy 86%.
+
+2. Best with MLP1 69% and with LogLinear 70%
+
+3. It takes between 40 to 100 iterations to learn the XOR function with 5 dimension hidden layer

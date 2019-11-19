@@ -1,8 +1,16 @@
-import codex.loglinear as ll
-from codex.utils import *
+import enum
+
+import loglinear as ll
+from utils import *
 
 STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
+
+class ParseOption(enum.Enum):
+    BI = 1
+    UNI = 2
+    XOR = 3
+
 
 def feats_to_vec(features):
     """
@@ -14,20 +22,44 @@ def feats_to_vec(features):
             vec[F2I[feature]] += 1
     return vec
 
+
+def feats_to_vec_uni(features):
+    """
+    converting features to vectors
+    """
+    vec = [0] * len(F2I_UNI)
+    for feature in features:
+        if feature in F2I_UNI:
+            vec[F2I_UNI[feature]] += 1
+    return vec
+
+
 def accuracy_on_dataset(dataset, params):
     """
     Compute the accuracy (a scalar) of the current parameters
     on the dataset.
     accuracy is (correct_predictions / all_predictions)
     """
-    good = total = 0.0
+    good = 0.0
     for label, features in dataset:
         x = feats_to_vec(features)
         good += 1 if ll.predict(x, params) == L2I[label] else 0
-        total += 1
-    return good / total
+    return good / len(dataset)
 
-def train_classifier(train_data, dev_data, num_iterations, learning_rate, params):
+
+def accuracy_on_dataset_uni(dataset, params):
+    """
+    Compute the accuracy (a scalar) of the current parameters
+    on the dataset.
+    accuracy is (correct_predictions / all_predictions)
+    """
+    good = 0
+    for label, features in dataset:
+        x = feats_to_vec_uni(features)
+        good += 1 if ll.predict(x, params) == L2I[label] else 0
+    return good / len(dataset)
+
+def train_classifier(train_data, dev_data, num_iterations, learning_rate, params, parse=ParseOption.BI):
     """
     Create and train a classifier, and return the parameters.
 
@@ -41,33 +73,35 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
         cum_loss = 0.0 # total loss in this iteration.
         random.shuffle(train_data)
         for label, features in train_data:
-            x = feats_to_vec(features) # convert features to a vector.
-            y = L2I[label] # convert the label to number if needed.
+            if parse == ParseOption.BI:
+                x = feats_to_vec(features) # convert features to a vector.
+                y = L2I[label]                  # convert the label to number if needed.
+            else:
+                x = feats_to_vec_uni(features)
+                y = L2I[label]
             loss, grads = ll.loss_and_gradients(x, y, params)
             cum_loss += loss
             # update weights and bias
             params = [params[i] - learning_rate*grads[i] for i in range(len(grads))]
-
+        accuracy_func = accuracy_on_dataset if parse == ParseOption.BI else accuracy_on_dataset_uni
         train_loss = cum_loss / len(train_data)
-        train_accuracy = accuracy_on_dataset(train_data, params)
-        dev_accuracy = accuracy_on_dataset(dev_data, params)
+        train_accuracy = accuracy_func(train_data, params)
+        dev_accuracy = accuracy_func(dev_data, params)
         print(I, train_loss, train_accuracy, dev_accuracy)
     return params
 
 
 def create_model_UNI_grams():
     print("------------------------- Start to train with UNI grams -------------------------")
-    num_iterations = 70
-    learning_rate = 0.001
+    num_iterations = 500
+    learning_rate = 0.0007
 
     in_dim = len(F2I_UNI)
     out_dim = len(L2I)
     params = ll.create_classifier(in_dim, out_dim)
-    trained_params = train_classifier(TRAIN_UNI, DEV_UNI, num_iterations, learning_rate, params)
+    trained_params = train_classifier(TRAIN_UNI, DEV_UNI, num_iterations, learning_rate, params, ParseOption.UNI)
 
-
-if __name__ == '__main__':
-    create_model_UNI_grams()
+def create_model_BI_grams():
     # set parameters for model
     num_iterations = 75
     learning_rate = 0.0007
@@ -80,9 +114,14 @@ if __name__ == '__main__':
             # convert feature to vectors
             x = feats_to_vec(feature)
             # getting predicted value index and find it value
-            y_tag = ll.predict(x,trained_params)
+            y_tag = ll.predict(x, trained_params)
             value = list(L2I.keys())[list(L2I.values()).index(y_tag)]
-            file.write(value+"\n")
+            file.write(value + "\n")
+
+
+if __name__ == '__main__':
+    #create_model_BI_grams()
+    create_model_UNI_grams()
 
 
 

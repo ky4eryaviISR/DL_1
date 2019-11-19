@@ -1,5 +1,5 @@
-from codex.utils import *
 import numpy as np
+from utils import *
 
 STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
@@ -21,7 +21,7 @@ def classifier_output(x, params):
     of a log-linear classifier with given params on input x.
     """
     W, b = params
-    probs = softmax(np.dot(x,W)+b)
+    probs = softmax(np.dot(x, W)+b)
     return probs
 
 

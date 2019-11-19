@@ -21,7 +21,7 @@ def classifier_output(x, params):
     of a log-linear classifier with given params on input x.
     """
     W, b = params
-    probs = softmax(W.T.dot(x)+b)
+    probs = softmax(np.dot(x,W)+b)
     return probs
 
 

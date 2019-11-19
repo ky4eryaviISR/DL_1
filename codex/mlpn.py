@@ -76,6 +76,8 @@ def loss_and_gradients(x, y, params):
         gW = np.outer(prev_layer, prev_derive)
         gb = prev_derive
         gradients += [gb, gW]
+        # last time there is no reason to calculate derivation
+        # because there is an input layer
         if i != len(storage):
             prev_derive = np.dot(W, prev_derive)*derive
     params.reverse()
@@ -104,8 +106,9 @@ def create_classifier(dims):
     params = []
 
     for i in range(len(dims)-1):
-        W = np.random.randn(dims[i], dims[i+1]) * np.sqrt(2 / (dims[i] + dims[i+1]))
-        b = np.random.randn(dims[i+1]) * np.sqrt(2 / (dims[i] + dims[i+1]))
+        eps = np.sqrt(6.0 / (dims[i] + dims[i + 1]))
+        W = np.random.uniform(-eps, eps, (dims[i], dims[i+1]))
+        b = np.random.uniform(-eps, eps, dims[i+1])
         params += [W, b]
 
     return params
@@ -113,8 +116,7 @@ def create_classifier(dims):
 if __name__ == '__main__':
     from codex.grad_check import gradient_check
     params = create_classifier([3, 2, 4])
-    [W, b] = params[0]
-    [U, b_tag] = params[1]
+    [W, b, U, b_tag] = params
 
     def _loss_and_W_grad(W):
         global b, U, b_tag

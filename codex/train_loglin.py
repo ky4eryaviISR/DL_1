@@ -55,7 +55,19 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
     return params
 
 
+def create_model_UNI_grams():
+    print("------------------------- Start to train with UNI grams -------------------------")
+    num_iterations = 70
+    learning_rate = 0.001
+
+    in_dim = len(F2I_UNI)
+    out_dim = len(L2I)
+    params = ll.create_classifier(in_dim, out_dim)
+    trained_params = train_classifier(TRAIN_UNI, DEV_UNI, num_iterations, learning_rate, params)
+
+
 if __name__ == '__main__':
+    create_model_UNI_grams()
     # set parameters for model
     num_iterations = 75
     learning_rate = 0.0007
@@ -71,4 +83,8 @@ if __name__ == '__main__':
             y_tag = ll.predict(x,trained_params)
             value = list(L2I.keys())[list(L2I.values()).index(y_tag)]
             file.write(value+"\n")
+
+
+
+
 

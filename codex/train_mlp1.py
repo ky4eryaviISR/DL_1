@@ -114,32 +114,22 @@ def create_model_UNI_grams():
 
 
 def create_model_4Xor():
+    print("------------------------- Start to train XOR m0del -------------------------")
     in_dim = 2
     hid_dim = 3
     out_dim = 2
-    for _ in range(20):
-        params = mlp1.create_classifier(in_dim, hid_dim, out_dim)
-        trained_params = train_classifier_XOR(data,
+    params = mlp1.create_classifier(in_dim, hid_dim, out_dim)
+    trained_params = train_classifier_XOR(data,
                                           num_iterations=5000,
                                           learning_rate=0.05,
                                           params=params)
-        time.sleep(1)
+
 
 
 if __name__ == '__main__':
-    #create_model_BI_grams()
-    #create_model_UNI_grams()
+    create_model_BI_grams()
+    create_model_UNI_grams()
     create_model_4Xor()
 
-    # train_data = TRAIN
-    # dev_data = DEV
-    # num_iterations = 70
-    # learning_rate = 0.001
-    #
-    # in_dim = len(F2I)
-    # hid_dim = len(L2I)*2
-    # out_dim = len(L2I)
-    # params = mlp1.create_classifier(in_dim,hid_dim, out_dim)
-    # trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
 
 

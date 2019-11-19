@@ -7,7 +7,7 @@ STUDENT={'name': 'Vladimir Balagula',
 
 def classifier_output(x, params):
     [W, b, U, b_tag] = params
-    probs = softmax(np.tanh(W.T.dot(x)+b).dot(U)+b_tag)
+    probs = softmax(np.tanh(np.dot(x,W)+b).dot(U)+b_tag)
     return probs
 
 def predict(x, params):
@@ -34,13 +34,13 @@ def loss_and_gradients(x, y, params):
     W, b, U, b_tag = params
     y = one_hot_vector(len(y_tag), y)
 
-    hid_out = np.tanh(W.T.dot(x) + b)
+    hid_out = np.tanh(np.dot(x, W) + b)
 
     gU = np.outer(hid_out, y_tag - y)
     gb_tag = y_tag - y
 
     dl_dz = np.dot(U, y_tag-y)
-    dz_dh = 1.0 - np.tanh(W.T.dot(x) + b)**2
+    dz_dh = 1.0 - np.tanh(np.dot(x, W) + b)**2
     dl_dh = dl_dz*dz_dh
     gW = np.outer(x, dl_dh)
     gb = dl_dh
@@ -55,11 +55,13 @@ def create_classifier(in_dim, hid_dim, out_dim):
     return:
     a flat list of 4 elements, W, b, U, b_tag.
     """
-    W = np.random.randn(in_dim, hid_dim)*np.sqrt(2/(in_dim+hid_dim))
-    b = np.random.randn(hid_dim)*np.sqrt(2/(in_dim+hid_dim))
+    eps = np.sqrt(6.0 / (in_dim + hid_dim))
+    W = np.random.uniform(-eps, eps, (in_dim, hid_dim))
+    b = np.random.uniform(-eps, eps, hid_dim)
 
-    U = np.random.randn(hid_dim, out_dim)*np.sqrt(2/(hid_dim+out_dim))
-    b_tag = np.random.randn(out_dim)*np.sqrt(2/(hid_dim+out_dim))
+    eps = np.sqrt(6.0 / (out_dim + hid_dim))
+    U = np.random.uniform(-eps, eps, (hid_dim, out_dim))
+    b_tag = np.random.uniform(-eps, eps, out_dim)
 
     params = [W, b, U, b_tag]
     return params

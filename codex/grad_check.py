@@ -55,5 +55,5 @@ def sanity_check():
     print("")
 
 if __name__ == '__main__':
-    # If these fail, your codex is definitely wrong.
+    # If these fail, your code is definitely wrong.
     sanity_check()

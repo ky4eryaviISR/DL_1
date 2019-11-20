@@ -1,6 +1,6 @@
-from codex import mlpn
-from codex.utils import *
-from codex.train_loglin import feats_to_vec
+import mlpn
+from utils import *
+from train_loglin import feats_to_vec
 
 STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
@@ -48,17 +48,13 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
 
 
 if __name__ == '__main__':
-    # YOUR CODE HERE
-    # write codex to load the train and dev sets, set up whatever you need,
-    # and call train_classifier.
     train_data = TRAIN
     dev_data = DEV
-    num_iterations = 20
+    num_iterations = 30
     learning_rate = 0.001
     in_dim = len(F2I)
     out_dim = len(L2I)
-    print([dim.shape for dim in mlpn.create_classifier([20, 30, 40, 10])])
-    params = mlpn.create_classifier([in_dim, 200, 300, out_dim])
+    params = mlpn.create_classifier([in_dim, 200, 100, out_dim])
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
 
 

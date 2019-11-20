@@ -72,7 +72,7 @@ def create_classifier(in_dim, hid_dim, out_dim):
 
 
 if __name__ == '__main__':
-    from codex.grad_check import gradient_check
+    from grad_check import gradient_check
 
     W, b, U, b_tag = create_classifier(3, 8, 4)
 

@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     # Sanity checks. If these fail, your gradient calculation is definitely wrong.
     # If they pass, it is likely, but not certainly, correct.
-    from codex.grad_check import gradient_check
+    from grad_check import gradient_check
 
     W, b = create_classifier(3, 4)
 

@@ -1,4 +1,4 @@
-# This file provides codex which you may or may not find helpful.
+# This file provides code which you may or may not find helpful.
 # Use it if you want, or ignore it.
 import random
 import numpy as np

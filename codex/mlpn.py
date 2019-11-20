@@ -1,6 +1,6 @@
 import numpy as np
-from codex.loglinear import softmax
-from codex.utils import one_hot_vector
+from loglinear import softmax
+from utils import one_hot_vector
 
 STUDENT={'name': 'Vladimir Balagula',
          'ID': '323792770'}
@@ -114,8 +114,8 @@ def create_classifier(dims):
     return params
 
 if __name__ == '__main__':
-    from codex.grad_check import gradient_check
-    params = create_classifier([3, 2, 4])
+    from grad_check import gradient_check
+    params = create_classifier([3, 8, 4])
     [W, b, U, b_tag] = params
 
     def _loss_and_W_grad(W):
